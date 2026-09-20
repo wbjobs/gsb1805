@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>本地加密笔记 · Web Crypto + IndexedDB</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>🔐 本地加密笔记</h1>
+    <div id="backendBadge" class="badge" hidden></div>
+    <div class="spacer"></div>
+    <button id="btnRotate" class="btn secondary" hidden>轮换密码</button>
+    <button id="btnBench" class="btn ghost" hidden>性能测试</button>
+    <button id="btnLock" class="btn ghost" hidden>锁定</button>
+  </header>
+
+  <main>
+    <!-- 初始化 / 解锁屏 -->
+    <section id="authView" class="card auth" hidden>
+      <h2 id="authTitle">解锁保险库</h2>
+      <p id="authHint" class="muted">输入主密码。密码经 PBKDF2(310k, SHA-256) 派生密钥，从不上传。</p>
+      <label class="field">
+        <span>主密码</span>
+        <input id="password" type="password" autocomplete="current-password" placeholder="请输入主密码" />
+      </label>
+      <label class="field" id="confirmField" hidden>
+        <span>确认密码</span>
+        <input id="passwordConfirm" type="password" autocomplete="new-password" placeholder="再次输入新密码" />
+      </label>
+      <button id="btnAuth" class="btn primary">解锁</button>
+    </section>
+
+    <!-- 迁移进度横幅 -->
+    <section id="migrationBanner" class="banner" hidden>
+      <div class="banner-row">
+        <strong id="migrationTitle">密钥迁移进行中…</strong>
+        <span id="migrationStats" class="muted"></span>
+        <span class="spacer"></span>
+        <button id="btnPause" class="btn tiny">暂停</button>
+        <button id="btnResume" class="btn tiny" hidden>继续</button>
+      </div>
+      <progress id="migrationBar" max="100" value="0"></progress>
+      <div id="migrationDetail" class="muted small"></div>
+    </section>
+
+    <!-- 笔记主界面 -->
+    <section id="notesView" hidden>
+      <div class="card composer">
+        <textarea id="noteInput" rows="3" placeholder="写一条新笔记，Ctrl/⌘ + Enter 保存"></textarea>
+        <div class="composer-row">
+          <span id="activeKidLabel" class="kid-label"></span>
+          <span class="spacer"></span>
+          <button id="btnAdd" class="btn primary">保存笔记</button>
+        </div>
+      </div>
+      <ul id="noteList" class="note-list"></ul>
+      <p id="emptyHint" class="muted center" hidden>还没有笔记，先写一条吧。</p>
+    </section>
+  </main>
+
+  <!-- 轮换密码对话框 -->
+  <dialog id="rotateDialog">
+    <form method="dialog" class="rotate-form">
+      <h3>轮换主密码</h3>
+      <p class="muted small">
+        轮换后立即生效：旧笔记可由新密码解开；后台会用新数据密钥分批重加密所有笔记，
+        关闭页面后再次打开可自动续迁。
+      </p>
+      <label class="field"><span>当前密码</span>
+        <input id="oldPwd" type="password" autocomplete="current-password" /></label>
+      <label class="field"><span>新密码</span>
+        <input id="newPwd" type="password" autocomplete="new-password" /></label>
+      <label class="field"><span>确认新密码</span>
+        <input id="newPwd2" type="password" autocomplete="new-password" /></label>
+      <div class="dialog-actions">
+        <button value="cancel" class="btn ghost">取消</button>
+        <button id="btnDoRotate" value="confirm" class="btn primary">确认轮换</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toastHost" class="toast-host"></div>
+
+  <script type="module" src="./src/app.mjs"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "encrypted-notes-vault",
+  "version": "1.0.0",
+  "description": "本地加密笔记存储：Web Crypto + IndexedDB + Web Worker，支持密钥轮换与断点续迁",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test",
+    "start": "node tools/serve.mjs"
+  }
+}

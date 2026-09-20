@@ -1,0 +1,116 @@
+:root {
+  --bg: #0f1115;
+  --panel: #181b22;
+  --panel-2: #1f232c;
+  --text: #e6e8ee;
+  --muted: #9aa1b1;
+  --primary: #4f7cff;
+  --primary-dim: #3b5ec9;
+  --ok: #35c48d;
+  --warn: #f0b429;
+  --err: #ef5350;
+  --radius: 10px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font: 15px/1.55 -apple-system, "PingFang SC", "Microsoft YaHei", Segoe UI, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+.topbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px;
+  background: var(--panel);
+  border-bottom: 1px solid #262b36;
+  position: sticky; top: 0; z-index: 5;
+}
+.topbar h1 { font-size: 17px; margin: 0; }
+.spacer { flex: 1; }
+main { max-width: 760px; margin: 24px auto; padding: 0 16px 80px; }
+.card {
+  background: var(--panel);
+  border: 1px solid #262b36;
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.auth { max-width: 420px; margin: 40px auto; }
+.auth h2 { margin: 0 0 6px; }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+.center { text-align: center; }
+.field { display: block; margin: 12px 0; }
+.field span { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+input, textarea {
+  width: 100%;
+  background: var(--panel-2);
+  border: 1px solid #313744;
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 14px;
+  outline: none;
+}
+input:focus, textarea:focus { border-color: var(--primary); }
+textarea { resize: vertical; }
+.btn {
+  border: 0; border-radius: 8px; padding: 9px 16px;
+  font-size: 14px; cursor: pointer; color: #fff;
+  background: var(--panel-2);
+}
+.btn:hover { filter: brightness(1.12); }
+.btn.primary { background: var(--primary); }
+.btn.secondary { background: #3d4a73; }
+.btn.ghost { background: transparent; border: 1px solid #313744; }
+.btn.tiny { padding: 4px 10px; font-size: 12px; }
+.btn[disabled] { opacity: .55; cursor: not-allowed; }
+.badge {
+  font-size: 11.5px; color: var(--muted);
+  border: 1px solid #313744; border-radius: 999px; padding: 2px 10px;
+}
+.banner {
+  background: #1b2230;
+  border: 1px solid #33405f;
+  border-radius: var(--radius);
+  padding: 12px 16px; margin-bottom: 16px;
+}
+.banner-row { display: flex; align-items: center; gap: 10px; }
+.banner progress { width: 100%; height: 10px; margin-top: 8px; }
+.composer { margin-bottom: 16px; }
+.composer-row { display: flex; align-items: center; margin-top: 10px; gap: 10px; }
+.kid-label { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; color: var(--muted); }
+.note-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.note-item {
+  background: var(--panel); border: 1px solid #262b36;
+  border-radius: var(--radius); padding: 12px 14px;
+}
+.note-item .note-meta {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11.5px; color: var(--muted); margin-top: 8px;
+}
+.note-item .note-text { white-space: pre-wrap; word-break: break-word; }
+.note-item.editing textarea { margin: 6px 0; }
+.note-actions { display: flex; gap: 6px; }
+.tag-old { color: var(--warn); border: 1px solid var(--warn); border-radius: 999px; padding: 0 8px; }
+.tag-new { color: var(--ok); }
+dialog {
+  background: var(--panel); color: var(--text);
+  border: 1px solid #313744; border-radius: 12px; padding: 0; width: min(440px, 92vw);
+}
+dialog::backdrop { background: rgba(0,0,0,.55); }
+.rotate-form { padding: 22px; }
+.rotate-form h3 { margin: 0 0 4px; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+.toast-host {
+  position: fixed; right: 18px; bottom: 18px;
+  display: grid; gap: 8px; z-index: 50;
+}
+.toast {
+  padding: 10px 14px; border-radius: 8px; min-width: 220px; max-width: 360px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  animation: slidein .18s ease-out;
+}
+.toast.error { background: #3a1d1d; border: 1px solid var(--err); }
+.toast.success { background: #133024; border: 1px solid var(--ok); }
+.toast.info { background: #1b2230; border: 1px solid #33405f; }
+@keyframes slidein { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
