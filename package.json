@@ -1,0 +1,11 @@
+{
+  "name": "secure-notes-local",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "本地加密笔记存储：Web Crypto + IndexedDB + Web Worker，支持密钥轮换与可续迁移",
+  "scripts": {
+    "test": "node test/run-tests.mjs",
+    "serve": "python3 -m http.server 8000"
+  }
+}

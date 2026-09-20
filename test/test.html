@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>浏览器端冒烟测试</title>
+  <style>body{font-family:monospace;padding:20px} .ok{color:green} .fail{color:red}</style>
+</head>
+<body>
+  <h1>浏览器端冒烟测试（真实 IndexedDB + Web Worker）</h1>
+  <pre id="out"></pre>
+  <script type="module">
+    import { NoteStore } from '../src/db.js';
+    import { CryptoClient } from '../src/crypto-client.js';
+    import { KeyManager } from '../src/key-manager.js';
+
+    const out = document.getElementById('out');
+    const log = (msg, ok) => {
+      out.innerHTML += `<span class="${ok === false ? 'fail' : 'ok'}">${msg}</span>\n`;
+    };
+    const assert = (cond, msg) => { if (!cond) throw new Error('断言失败: ' + msg); };
+
+    try {
+      indexedDB.deleteDatabase('smoke-test');
+      const store = await new NoteStore('smoke-test').open();
+      const crypto = new CryptoClient('../src/crypto-worker.js');
+      const events = [];
+      const km = new KeyManager({
+        store, crypto, batchSize: 20,
+        onEvent: (e) => events.push(e),
+      });
+
+      await km.setup('pw');
+      log('✓ 初始化（PBKDF2 派生 + v1 DEK 落盘）');
+
+      for (let i = 0; i < 100; i++) {
+        const enc = await km.encryptNote('浏览器笔记-' + i);
+        await store.putNote({ ...enc, updatedAt: Date.now() });
+      }
+      log('✓ Worker 内加密 100 条');
+
+      const t0 = performance.now();
+      await km.rotate();
+      const done = await new Promise((res) => {
+        const t = setInterval(() => {
+          const e = events.find((x) => x.type === 'migration-done');
+          if (e) { clearInterval(t); res(e); }
+        }, 50);
+      });
+      const ms = (performance.now() - t0).toFixed(0);
+      assert(done.processed === 100, '迁移 100 条');
+      log(`✓ 轮换 + 迁移 100 条完成，耗时 ${ms}ms`);
+
+      const notes = await store.getAllNotes();
+      assert(notes.every((n) => n.keyVersion === 2), '全部为 v2');
+      const plain = await km.decryptNote(notes[42]);
+      assert(plain === '浏览器笔记-42', '旧笔记可解');
+      log('✓ 轮换后旧笔记可解，全部记录已迁至 v2');
+
+      const enc = await km.encryptNote('轮换后的新笔记');
+      assert(enc.keyVersion === 2, '新笔记用 v2');
+      log('✓ 新笔记使用新密钥 v2');
+
+      // 错误口令
+      const km2 = new KeyManager({ store, crypto: new CryptoClient('../src/crypto-worker.js') });
+      let caught = null;
+      try { await km2.unlock('bad-pw'); } catch (e) { caught = e; }
+      assert(caught && caught.code === 'UNWRAP_FAILED', '错误口令应报 UNWRAP_FAILED');
+      log('✓ 错误口令有明确异常: ' + caught.message);
+
+      log('\n全部浏览器端测试通过 🎉');
+    } catch (e) {
+      log('✗ ' + e.message, false);
+      console.error(e);
+    }
+  </script>
+</body>
+</html>
